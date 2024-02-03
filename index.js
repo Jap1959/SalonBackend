@@ -3,8 +3,9 @@ const app = express();
 const bodyParser = require('body-parser');
 const { SendEmail } = require('./SendEmail');
 app.use(bodyParser.urlencoded({ extended: false }));
-
+const cors = require('cors');
 app.use(bodyParser.json());
+app.use(cors());
 
 
 app.get('/', (req, res) => {
