@@ -25,12 +25,12 @@ function AddRequest(data) {
             const docRef = db.collection('users').doc();
             const result = docRef.set({
                 Reqid: docRef.id,
-                Email: Email,
-                Name: Name,
-                PhoneNumber: Phone,
-                Service: Service,
-                date: date,
-                Servicetype: Servicetype,
+                Email: data.Email,
+                Name: data.Name,
+                PhoneNumber: data.Phone,
+                Service: data.Service,
+                date: data.date,
+                Servicetype: data.Servicetype,
                 RequestStatus: -1,
             });
             console.log(result);
