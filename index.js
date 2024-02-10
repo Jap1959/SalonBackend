@@ -15,12 +15,19 @@ admin.initializeApp({
     storageBucket: process.env.BUCKET,
 });
 const multer = require('multer');
-
-
+const allowedOrigin = 'https://jodevelopers.netlify.app';
 const AddData = require('./Database/AddData/AddData.js');
 const { GetRequest, GetTestimontials, } = require('./Database/GetData/GetDataValues.js');
 const { signInWithEmailAndPassword } = require('./Database/Authentication/Auth.js');
 const { SendContactEmail } = require('./SendEmail.js');
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', allowedOrigin);
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+
 app.get('/', (req, res) => {
     res.send('Connected!!!!!');
 });
@@ -68,6 +75,9 @@ app.get('/isLogin', async (req, res) => {
 });
 app.post('/Login', async (req, res) => {
     console.log(req.body);
+    const allowedOrigin = 'https://jodevelopers.netlify.app';
+    res.header('Access-Control-Allow-Origin', allowedOrigin);
+    res.header('Access-Control-Allow-Credentials', true);
     const result = await signInWithEmailAndPassword(req.body.Email, req.body.Password);
     if (result.status === 200) {
         res.cookie('login', true, {
