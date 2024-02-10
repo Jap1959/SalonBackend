@@ -1,14 +1,24 @@
 const nodemailer = require('nodemailer');
 
-const SendEmail = (data, Reqid) => {
-	const user = process.env.USER;
-	const Password = process.env.PASSWORD;
+const SendEmail = async (data, Reqid) => {
+	console.log(process.env.USER);
+	console.log(process.env.E_PASSWORD);
 	let transporter = nodemailer.createTransport({
 		service: 'Gmail',
 		auth: {
-			user: user,
-			pass: Password
+			user: process.env.USER,
+			pass: process.env.E_PASSWORD,
 		}
+	});
+	const dateTimeString = data.date;
+	const dateTime = new Date(dateTimeString);
+	const formattedDateTime = dateTime.toLocaleTimeString('en-US', {
+		year: "numeric",
+		month: "long",
+		day: "2-digit",
+		hour: "numeric",
+		minute: "2-digit",
+		hour12: true,
 	});
 	const htmlContent = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -346,7 +356,7 @@ const SendEmail = (data, Reqid) => {
 			
 	  <div class="v-text-align v-font-size" style="font-size: 16px; line-height: 140%; text-align: center; word-wrap: break-word;">
 		<p style="line-height: 140%;"><span data-metadata="&lt;!--(figmeta)eyJmaWxlS2V5IjoibWh3NndXalZzMjVxNGJFRTdLRmxnZCIsInBhc3RlSUQiOjE3MDA5MzcyNTYsImRhdGFUeXBlIjoic2NlbmUifQo=(/figmeta)--&gt;" style="line-height: 22.4px;"></span><strong>Hello,${data.Name},</strong></p>
-	<p style="line-height: 140%;color: white;">Your Booking request for ${data.Service},${data.Servicetype} on ${data.date} has been made. Here is the Request id for further assistance.</p>
+	<p style="line-height: 140%;color: white;">Your Booking request for ${data.Service},${data.Servicetype} on ${formattedDateTime} has been made. Here is the Request id for further assistance.</p>
 	<p style="line-height: 140%;"> </p>
 	<p style="line-height: 140%;color: white;">Request ID</p>
 	  </div>
@@ -364,8 +374,8 @@ const SendEmail = (data, Reqid) => {
 	  <!--[if mso]><style>.v-button {background: transparent !important;}</style><![endif]-->
 	<div class="v-text-align" align="center">
 	  <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://unlayer.com" style="height:37px; v-text-anchor:middle; width:219px;" arcsize="11%"  strokecolor="#000000" strokeweight="1px" fillcolor="#000000"><w:anchorlock/><center style="color:#ffffff;font-family: 'Open Sans',sans-serif; "><![endif]-->
-		<a href="https://unlayer.com" target="_blank" class="v-button v-size-width v-font-size" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #ffffff; background-color: #000000; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:38%; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;border-top-color: #000000; border-top-style: solid; border-top-width: 1px; border-left-color: #000000; border-left-style: solid; border-left-width: 1px; border-right-color: #000000; border-right-style: solid; border-right-width: 1px; border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 1px;font-family: 'Open Sans',sans-serif; font-size: 14px;">
-		  <span style="display:block;padding:10px 20px;line-height:120%;">${Reqid}</span>
+		<a href="" target="_blank" class="v-button v-size-width v-font-size" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #ffffff; background-color: #000000; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:38%; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;border-top-color: #000000; border-top-style: solid; border-top-width: 1px; border-left-color: #000000; border-left-style: solid; border-left-width: 1px; border-right-color: #000000; border-right-style: solid; border-right-width: 1px; border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 1px;font-family: 'Open Sans',sans-serif; font-size: 14px;">
+		  <span style="display:block;padding:10px 20px;line-height:120%;">${Reqid}</span>	
 		</a>
 		<!--[if mso]></center></v:roundrect><![endif]-->
 	</div>
@@ -519,8 +529,8 @@ const SendEmail = (data, Reqid) => {
 	</html>
 	`;
 	let mailOptions = {
-		from: data.Email,
-		to: Email,
+		from: process.env.USER,
+		to: data.Email,
 		subject: 'Booking Appointment',
 		html: htmlContent,
 	};
@@ -529,21 +539,30 @@ const SendEmail = (data, Reqid) => {
 	transporter.sendMail(mailOptions, (error, info) => {
 		if (error) {
 			console.error('Error sending email:', error);
-		} else {
-			console.log('Email sent:', info.response);
-			return ({ status: 200, message: 'Email sent Sucessfully' });
+			return ({ status: 422, message: 'Some Error Occured' });
 		}
 	});
+	return ({ status: 200, message: 'Confirmation Email will be sent to you shortly' });
 }
-const ConfirmationEmail = (data, Address) => {
+const ConfirmationEmail = async (data, Address) => {
 	const user = process.env.USER;
-	const Password = process.env.PASSWORD;
+	const Password = process.env.E_PASSWORD;
 	let transporter = nodemailer.createTransport({
 		service: 'Gmail',
 		auth: {
 			user: user,
 			pass: Password
 		}
+	});
+	const dateTimeString = data.date;
+	const dateTime = new Date(dateTimeString);
+	const formattedDateTime = dateTime.toLocaleTimeString('en-US', {
+		year: "numeric",
+		month: "long",
+		day: "2-digit",
+		hour: "numeric",
+		minute: "2-digit",
+		hour12: true,
 	});
 	const htmlContent = `<!DOCTYPE HTML
 	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -994,7 +1013,7 @@ const ConfirmationEmail = (data, Address) => {
 								<div
 								  style="font-size: 14px; color: #333333; line-height: 140%; text-align: left; word-wrap: break-word;">
 								  <p style="font-size: 14px; line-height: 140%;"><strong>Start Date / Time :
-									</strong> ${data.date}</p>
+									</strong> ${formattedDateTime}</p>
 								</div>
   
 							  </td>
@@ -1244,8 +1263,8 @@ const ConfirmationEmail = (data, Address) => {
   </html>
 	`;
 	let mailOptions = {
-		from: data.Email,
-		to: Email,
+		from: process.env.USER,
+		to: data.Email,
 		subject: 'Booking Appointment Confirmed',
 		html: htmlContent,
 	};
@@ -1254,11 +1273,34 @@ const ConfirmationEmail = (data, Address) => {
 	transporter.sendMail(mailOptions, (error, info) => {
 		if (error) {
 			console.error('Error sending email:', error);
-		} else {
-			console.log('Email sent:', info.response);
-			return ({ status: 200, message: 'Email sent Sucessfully' });
+			return ({ status: 200, message: 'Some Error occured' });
 		}
 	});
+	return ({ status: 200, message: 'Email sent Sucessfully' });
 }
-module.exports = { SendEmail, ConfirmationEmail };
+const SendContactEmail = async (data) => {
+	let transporter = nodemailer.createTransport({
+		service: 'Gmail',
+		auth: {
+			user: process.env.USER,
+			pass: process.env.E_PASSWORD,
+		}
+	});
+	const Message = "Name " + data.Name + ",\n" + data.Message + "\n" + " Contact info\n" + data.Mobile + ',' + data.Email;
+	let mailOptions = {
+		from: process.env.USER,
+		to: process.env.USER,
+		subject: `Enquire about ${data.Service}`,
+		text: Message,
+	};
+
+	transporter.sendMail(mailOptions, (error, info) => {
+		if (error) {
+			console.error('Error sending email:', error);
+			return ({ status: 422, message: 'Some Error Occured' });
+		}
+	});
+	return ({ status: 200, message: 'Will Connect shortly' });
+}
+module.exports = { SendEmail, ConfirmationEmail, SendContactEmail };
 
