@@ -71,6 +71,8 @@ app.post('/Login', async (req, res) => {
     const result = await signInWithEmailAndPassword(req.body.Email, req.body.Password);
     if (result.status === 200) {
         res.cookie('login', true, {
+            domain: '.netlify.app',
+            path: '/',
             expires: new Date(Date.now() + 25892000000),
             secure: true,
         });
