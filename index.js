@@ -18,7 +18,7 @@ const multer = require('multer');
 
 
 const AddData = require('./Database/AddData/AddData.js');
-const { GetRequest, GetTestimontials, } = require('./Database/GetData/Getdata.js');
+const { GetRequest, GetTestimontials, } = require('./Database/GetData/GetDataValues.js');
 const { signInWithEmailAndPassword } = require('./Database/Authentication/Auth.js');
 const { SendContactEmail } = require('./SendEmail.js');
 app.get('/', (req, res) => {
