@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 app.use(bodyParser.json());
 app.use(cors());
 app.use(cookieParser());
@@ -20,13 +21,16 @@ const AddData = require('./Database/AddData/AddData.js');
 const { GetRequest, GetTestimontials, } = require('./Database/GetData/GetDataValues.js');
 const { signInWithEmailAndPassword } = require('./Database/Authentication/Auth.js');
 const { SendContactEmail } = require('./SendEmail.js');
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', allowedOrigin);
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+app.use(session({
+    secret: 'WelcomeEveryOne', // Change this to your secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: true,
+        maxAge: 3600000,
+        sameSite: 'none'
+    }
+}));
 
 app.get('/', (req, res) => {
     res.send('Connected!!!!!');
@@ -66,7 +70,7 @@ app.post('/SendEmail', async (req, res) => {
     res.send(result);
 });
 app.get('/isLogin', async (req, res) => {
-    if (req.cookies.login != undefined) {
+    if (req.session.login != undefined) {
         const login = req.cookies.login;
         res.send({ status: 200, login: true });
     } else {
@@ -80,14 +84,9 @@ app.post('/Login', async (req, res) => {
     res.header('Access-Control-Allow-Credentials', true);
     const result = await signInWithEmailAndPassword(req.body.Email, req.body.Password);
     if (result.status === 200) {
-        res.cookie('login', true, {
-            domain: '.salonbackend-s9q2.onrender.com',
-            path: '/',
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-        });
+        req.session.login = true;
     }
-    console.log(req.cookies.login);
+    console.log(req.session.login);
     res.send(result);
 });
 app.post('/Book', async (req, res) => {
