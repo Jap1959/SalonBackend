@@ -79,9 +79,6 @@ app.get('/isLogin', async (req, res) => {
 });
 app.post('/Login', async (req, res) => {
     console.log(req.body);
-    const allowedOrigin = 'https://jodevelopers.netlify.app';
-    res.header('Access-Control-Allow-Origin', allowedOrigin);
-    res.header('Access-Control-Allow-Credentials', true);
     const result = await signInWithEmailAndPassword(req.body.Email, req.body.Password);
     if (result.status === 200) {
         req.session.login = true;
