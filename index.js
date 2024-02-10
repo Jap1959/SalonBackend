@@ -67,13 +67,14 @@ app.get('/isLogin', async (req, res) => {
     }
 });
 app.post('/Login', async (req, res) => {
+    console.log(req.body);
     const result = await signInWithEmailAndPassword(req.body.Email, req.body.Password);
     if (result.status === 200) {
         res.cookie('login', true, {
             expires: new Date(Date.now() + 25892000000),
-            httpOnly: true,
         });
     }
+    console.log(result);
     res.send(result);
 });
 app.post('/Book', async (req, res) => {
