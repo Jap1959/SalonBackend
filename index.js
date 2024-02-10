@@ -75,7 +75,7 @@ app.post('/Login', async (req, res) => {
             secure: true,
         });
     }
-    console.log(result);
+    console.log(req.cookies.login);
     res.send(result);
 });
 app.post('/Book', async (req, res) => {
