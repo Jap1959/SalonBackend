@@ -72,6 +72,8 @@ app.post('/Login', async (req, res) => {
     if (result.status === 200) {
         res.cookie('login', true, {
             expires: new Date(Date.now() + 25892000000),
+            secure: true,
+            sameSite: 'strict'
         });
     }
     console.log(result);
