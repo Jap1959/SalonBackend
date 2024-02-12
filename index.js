@@ -21,6 +21,7 @@ const AddData = require('./Database/AddData/AddData.js');
 const { GetRequest, GetTestimontials, } = require('./Database/GetData/GetDataValues.js');
 const { signInWithEmailAndPassword } = require('./Database/Authentication/Auth.js');
 const { SendContactEmail } = require('./SendEmail.js');
+const { GetTokenDetails } = require('./Database/Authentication/jwt.js');
 app.use(session({
     secret: 'WelcomeEveryOne', // Change this to your secret key
     resave: false,
@@ -34,6 +35,10 @@ app.use(session({
 
 app.get('/', (req, res) => {
     res.send('Connected!!!!!');
+});
+app.get('/Verify/:token', async (req, res) => {
+    const result = await GetTokenDetails(req.params.token);
+    res.send(result);
 });
 app.get('/Request/:id', async (req, res) => {
     const PageNumber = parseInt(req.params.id);
@@ -69,21 +74,9 @@ app.post('/SendEmail', async (req, res) => {
     const result = await SendContactEmail(req.body);
     res.send(result);
 });
-app.get('/isLogin', async (req, res) => {
-    if (req.session.login != undefined) {
-        const login = req.cookies.login;
-        res.send({ status: 200, login: true });
-    } else {
-        res.send({ status: 200, login: false });
-    }
-});
+
 app.post('/Login', async (req, res) => {
-    console.log(req.body);
     const result = await signInWithEmailAndPassword(req.body.Email, req.body.Password);
-    if (result.status === 200) {
-        req.session.login = true;
-    }
-    console.log(req.session.login);
     res.send(result);
 });
 app.post('/Book', async (req, res) => {
