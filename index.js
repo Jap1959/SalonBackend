@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
 app.use(bodyParser.json());
 app.use(cors());
 app.use(cookieParser());
@@ -22,17 +21,6 @@ const { GetRequest, GetTestimontials, } = require('./Database/GetData/GetDataVal
 const { signInWithEmailAndPassword } = require('./Database/Authentication/Auth.js');
 const { SendContactEmail } = require('./SendEmail.js');
 const { GetTokenDetails } = require('./Database/Authentication/jwt.js');
-app.use(session({
-    secret: 'WelcomeEveryOne', // Change this to your secret key
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        secure: true,
-        maxAge: 3600000,
-        sameSite: 'none'
-    }
-}));
-
 app.get('/', (req, res) => {
     res.send('Connected!!!!!');
 });
